@@ -4,6 +4,7 @@ import os
 import time
 import telegram
 
+
 def main():
     load_dotenv()
     url = 'https://dvmn.org/api/long_polling/'
@@ -12,21 +13,18 @@ def main():
     chat_id = os.getenv('TG_CHAT_ID')
     header = {'Authorization': dvmn_token}
     bot = telegram.Bot(token=tg_token)
-    timestamp = 0
+    cur_time = time.time()
+    timestamp = cur_time
     while True:
         try:
-            cur_time = time.time()
-            if timestamp != 0:
-                response = requests.get(url, headers=header, timeout=4, params=payload)
-            else:
-                response = requests.get(url, headers=header, timeout=4)
-            response.raise_for_status()
-            response = response.json()
-            timestamp = response['new_attempts'][0]['timestamp']
             payload = {'timestamp': timestamp}
-            lesson_title = response['new_attempts'][0]['lesson_title']
-            lesson_url = f"dvmn.org{response['new_attempts'][0]['lesson_url']}"
-            if response['new_attempts'][0]['is_negative']:
+            response = requests.get(url, headers=header, timeout=4, params=payload)
+            response.raise_for_status()
+            check_info = response.json()['new_attempts'][0]
+            timestamp = check_info['timestamp']
+            lesson_title = check_info['lesson_title']
+            lesson_url = f"dvmn.org{check_info['lesson_url']}"
+            if check_info['is_negative']:
                 is_negative = 'К сожалению, в работе есть ошибки :('
             else:
                 is_negative = 'Всё супер, можно приступать к слеующей задаче!'
@@ -35,9 +33,6 @@ def main():
         except requests.exceptions.ReadTimeout:
             pass
         except requests.exceptions.ConnectionError:
-            if timestamp == 0:
-                timestamp = cur_time
-                payload = {'timestamp': timestamp}
             time.sleep(5)
 
 
