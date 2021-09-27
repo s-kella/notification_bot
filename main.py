@@ -3,9 +3,12 @@ from dotenv import load_dotenv
 import os
 import time
 import telegram
+import logging
 
 
 def main():
+    logging.basicConfig(level=logging.INFO)
+    logging.info('the bot is runnning')
     load_dotenv()
     url = 'https://dvmn.org/api/long_polling/'
     dvmn_token = os.getenv('DEVMAN_TOKEN')
