@@ -18,19 +18,20 @@ class TelegramLogsHandler(logging.Handler):
         self.tg_bot.send_message(chat_id=self.chat_id, text=log_entry)
 
 
-
 def main():
     load_dotenv()
     url = 'https://dvmn.org/api/long_polling/'
     dvmn_token = os.getenv('DEVMAN_TOKEN')
-    tg_token = os.getenv('TG_TOKEN')
+    tg_notif_token = os.getenv('TG_NOTIF_TOKEN')
     chat_id = os.getenv('TG_CHAT_ID')
     header = {'Authorization': dvmn_token}
-    bot = telegram.Bot(token=tg_token)
+    notification_bot = telegram.Bot(token=tg_notif_token)
 
     logger = logging.getLogger('Logger')
     logger.setLevel(logging.INFO)
-    logger.addHandler(TelegramLogsHandler(bot, chat_id))
+    tg_log_token = os.getenv('TG_LOG_TOKEN')
+    log_bot = telegram.Bot(token=tg_log_token)
+    logger.addHandler(TelegramLogsHandler(log_bot, chat_id))
     logger.info('the bot is runnning')
 
     timestamp = time.time()
@@ -49,10 +50,13 @@ def main():
                     is_negative = 'К сожалению, в работе есть ошибки :('
                 else:
                     is_negative = 'Всё супер, можно приступать к слеующей задаче!'
-                bot.send_message(chat_id=chat_id,
+                notification_bot.send_message(chat_id=chat_id,
                                  text=f'Преподаватель проверил вашу работу "{lesson_title}".\n\n{is_negative}\n\n{lesson_url}')
             else:
                 timestamp = response_data['timestamp_to_request']
+            '''a = 0 / 0
+        except Exception as e:
+            print(e)'''
         except requests.exceptions.ReadTimeout:
             pass
         except requests.exceptions.ConnectionError:
