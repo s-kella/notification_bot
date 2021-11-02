@@ -1,3 +1,4 @@
+import traceback
 import requests
 from dotenv import load_dotenv
 import os
@@ -32,7 +33,7 @@ def main():
     tg_log_token = os.getenv('TG_LOG_TOKEN')
     log_bot = telegram.Bot(token=tg_log_token)
     logger.addHandler(TelegramLogsHandler(log_bot, chat_id))
-    logger.info('the bot is runnning')
+    logger.info('The bot is runnning')
 
     timestamp = time.time()
     while True:
@@ -54,13 +55,13 @@ def main():
                                  text=f'Преподаватель проверил вашу работу "{lesson_title}".\n\n{is_negative}\n\n{lesson_url}')
             else:
                 timestamp = response_data['timestamp_to_request']
-            '''a = 0 / 0
-        except Exception as e:
-            print(e)'''
         except requests.exceptions.ReadTimeout:
             pass
         except requests.exceptions.ConnectionError:
             time.sleep(5)
+        except Exception as e:
+            logger.info(f'Bot crashed with the error: {e}')
+            logger.info(traceback.format_exc())
 
 
 if __name__ == '__main__':
