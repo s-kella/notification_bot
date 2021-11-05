@@ -39,7 +39,7 @@ def main():
     while True:
         try:
             payload = {'timestamp': timestamp}
-            response = requests.get(url, headers=header, timeout=4, params=payload)
+            response = requests.get(url, headers=header, timeout=60, params=payload)
             response.raise_for_status()
             response_data = response.json()
             if response_data['status'] == 'found':
@@ -50,7 +50,7 @@ def main():
                 if attempt_info['is_negative']:
                     is_negative = 'К сожалению, в работе есть ошибки :('
                 else:
-                    is_negative = 'Всё супер, можно приступать к слеующей задаче!'
+                    is_negative = 'Всё супер, можно приступать к следующей задаче!'
                 notification_bot.send_message(chat_id=chat_id,
                                  text=f'Преподаватель проверил вашу работу "{lesson_title}".\n\n{is_negative}\n\n{lesson_url}')
             else:
