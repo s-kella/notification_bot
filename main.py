@@ -1,10 +1,11 @@
-import traceback
 import requests
 from dotenv import load_dotenv
 import os
 import time
 import telegram
 import logging
+
+logger = logging.getLogger('Logger')
 
 
 class TelegramLogsHandler(logging.Handler):
@@ -28,10 +29,9 @@ def main():
     header = {'Authorization': dvmn_token}
     notification_bot = telegram.Bot(token=tg_notif_token)
 
-    logger = logging.getLogger('Logger')
-    logger.setLevel(logging.INFO)
     tg_log_token = os.getenv('TG_LOG_TOKEN')
     log_bot = telegram.Bot(token=tg_log_token)
+    logger.setLevel(logging.INFO)
     logger.addHandler(TelegramLogsHandler(log_bot, chat_id))
     logger.info('The bot is runnning')
 
@@ -60,8 +60,7 @@ def main():
         except requests.exceptions.ConnectionError:
             time.sleep(5)
         except Exception as e:
-            logger.info(f'Bot crashed with the error: {e}')
-            logger.info(traceback.format_exc())
+            logger.exception(f'Bot crashed with the error: {e}\n\n')
 
 
 if __name__ == '__main__':
