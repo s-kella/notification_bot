@@ -46,7 +46,7 @@ def main():
                 attempt_info = response_data['new_attempts'][0]
                 timestamp = response_data['last_attempt_timestamp']
                 lesson_title = attempt_info['lesson_title']
-                lesson_url = f"dvmn.org{attempt_info['lesson_url']}"
+                lesson_url = f"{attempt_info['lesson_url']}"
                 if attempt_info['is_negative']:
                     is_negative = 'К сожалению, в работе есть ошибки :('
                 else:
